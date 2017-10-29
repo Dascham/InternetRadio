@@ -2,11 +2,12 @@ from Commands.ServerReplies.AnnounceReply import Announce
 from Commands.ServerReplies.InvalidCommandReply import InvalidCommand
 from Commands.ServerReplies.WelcomeReply import Welcome
 from Commands.Clients.TCPClient import TCPClient
-import socket
+import socket, time
 from threading import Thread
 
 numberOfStations = 2
-currentSongList = [None] * 2
+#currentSongList = [None] * 2
+currentSongList = ["House of the Rising Sun", "Trance 009"]
 
 radioStations = ["224.0.105.128", ["224.0.105.129"]] #multicastgroups
 timeout = 0.1
@@ -17,7 +18,7 @@ MCastGroup_0 = "224.0.105.128" #send song data here
 
 def HandleIndividualTCPConnections(connectionSocket, message):
     #expect HelloCommand
-    if message[:1] == 0:
+    if message[:1] == "0":
         welcome = Welcome(numberOfStations, MCastGroup_0, portNumber)
         welcomeReply = welcome.welcomeReply
         connectionSocket.send(welcomeReply)
@@ -25,11 +26,11 @@ def HandleIndividualTCPConnections(connectionSocket, message):
         #expect AskSongCommand
         message = connectionSocket.recv(1024)
         message = message.decode("ascii")
-        if message[:1] == 1:
+        if message[:1] == "1":
             #check that requested radio station exists
             announce = Announce(message, currentSongList)
-            if not announce.songname:
-                msg = "Radio station "+str(announce.stationNumber)+" does not exist"
+            if announce.RequestNotValid:
+                msg = "Radio station "+str(announce.requestedStationNumber)+" does not exist"
                 invalidCommand = InvalidCommand(msg)
                 connectionSocket.send(invalidCommand)
                 connectionSocket.close()
@@ -42,6 +43,7 @@ def HandleIndividualTCPConnections(connectionSocket, message):
             msg = "Expected: 1 AskSongCommand"
             invalidCommand = InvalidCommand(msg)
             connectionSocket.send(invalidCommand.invalidMessage)
+            connectionSocket.close()
 
     else:
         errormsg = "Expected a \"HelloCommand\""
@@ -63,7 +65,7 @@ def ListenTCPConnections():
         message = connectionSocket.recv(1024)
         message = message.decode("ascii")
 
-        if not message:
+        if message:
             thread = Thread(target=HandleIndividualTCPConnections(connectionSocket, message))
             threads.append(thread)
             thread.start()
@@ -78,14 +80,17 @@ def TransmitSongData():
     msg = "This message should be song data".encode("ascii")
     while 1:
         serverSocket.sendto(msg, (MCastGroup_0, portNumber))
+        time.sleep(5)
+
+    #somewhere, this function should update global song list of what song is currently playing on what station
 
 #On server start-up, song data should start being transmitted
 try:
     thread1 = Thread(target=TransmitSongData)
     thread2 = Thread(target=ListenTCPConnections)
 
-    print("Starting thread1")
-    thread1.start()
+    #print("Starting thread1")
+    #thread1.start()
     print("Starting thread2")
     thread2.start()
 except:
