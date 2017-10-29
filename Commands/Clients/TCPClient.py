@@ -23,7 +23,7 @@ class TCPClient:
             print("0 did not receive WelcomeReply")
 
         #send AskSongCommand
-        asksong = AskSong(2)
+        asksong = AskSong(1)
         clienSocket.send(asksong.askSongCommand)
 
         #expect AnnounceReply
@@ -35,5 +35,6 @@ class TCPClient:
 
         clienSocket.close()
 
-q = TCPClient()
-q.InitiateTCPClient(q.serverip, q.serverport)
+        #return an mcastgroup
+        list = serverReply.split(",")
+        return list[2]
