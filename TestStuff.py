@@ -15,3 +15,4 @@ with open(filelocation) as file:
     print(data)
 
 
+>>>>>>> dbc04e8e6d3c8c6c5560d445530af7f9edec3000
