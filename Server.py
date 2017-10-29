@@ -1,9 +1,9 @@
 from Commands.ServerReplies.AnnounceReply import Announce
 from Commands.ServerReplies.InvalidCommandReply import InvalidCommand
 from Commands.ServerReplies.WelcomeReply import Welcome
-from Commands.Clients.TCPClient import TCPClient
 import socket, time
 from threading import Thread
+
 
 numberOfStations = 2
 #currentSongList = [None] * 2
@@ -80,7 +80,7 @@ def TransmitSongData():
     msg = "This message should be song data".encode("ascii")
     while 1:
         serverSocket.sendto(msg, (MCastGroup_0, portNumber))
-        time.sleep(5)
+        time.sleep(2)
 
     #somewhere, this function should update global song list of what song is currently playing on what station
 
@@ -89,8 +89,8 @@ try:
     thread1 = Thread(target=TransmitSongData)
     thread2 = Thread(target=ListenTCPConnections)
 
-    #print("Starting thread1")
-    #thread1.start()
+    print("Starting thread1")
+    thread1.start()
     print("Starting thread2")
     thread2.start()
 except:
