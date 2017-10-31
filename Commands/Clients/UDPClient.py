@@ -8,10 +8,8 @@ class UDPClient:
         clientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         clientSocket.bind(('', port))
 
-        #no clue what this is
         mreq = struct.pack("4sl", socket.inet_aton(mcastgroup), socket.INADDR_ANY)
 
-        #no clue what this is
         clientSocket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
         #get audio thing
