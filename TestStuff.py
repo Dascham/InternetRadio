@@ -1,27 +1,32 @@
 from io import RawIOBase
-import os, re
+import os, re, wave, pyaudio
 
-#interesting - this works
-filelocation = "C:\\Users\Dascham\Desktop\paris.mp3"
-#os.startfile(filepath=filelocation)
-number = 1
-msg = "something"
+chunk = 1024
 
-<<<<<<< HEAD
+filelocation = "C:\\Users\Dascham\Desktop\\paris2.wav"
+
+file = wave.open(filelocation, mode="rb")
+
+print(file.getframerate())
+
+p = pyaudio.PyAudio()
+
+stream = p.open(format=(p.get_format_from_width(file.getsampwidth())),
+                channels = file.getnchannels(),
+                rate = file.getframerate(),
+                output = True)
+
+data = file.readframes(chunk)
+a = 0
+while a < 50:
+    stream.write(data)
+    data = file.readframes(chunk)
+    a = a + 1
 
 
+stream.stop_stream()
+stream.close()
 
+p.terminate()
 
-with open(filelocation) as file:
-    file.seek(1)
-    data = file.read(10 - 1)
-    print(data)
-
-
-=======
-msg = msg+str(number)
-print(msg)
-
-msg = msg.encode("ascii")
-print(msg)
->>>>>>> dbc04e8e6d3c8c6c5560d445530af7f9edec3000
+file.close()

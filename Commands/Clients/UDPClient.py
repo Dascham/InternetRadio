@@ -1,4 +1,4 @@
-import socket, struct
+import socket, struct, pyaudio
 
 class UDPClient:
 
@@ -13,7 +13,11 @@ class UDPClient:
 
         #no clue what this is
         clientSocket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+        #get audio thing
+        p = pyaudio.PyAudio()
+        stream = p.open(format=p.get_format_from_width(2), channels=2, rate=44100, output=True)
+
         while 1:
-            data = clientSocket.recv(10240)
-            data = data.decode("ascii")
-            print(data)
+            data = clientSocket.recv(100000)
+            stream.write(data)

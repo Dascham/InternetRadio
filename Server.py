@@ -1,7 +1,7 @@
 from Commands.ServerReplies.AnnounceReply import Announce
 from Commands.ServerReplies.InvalidCommandReply import InvalidCommand
 from Commands.ServerReplies.WelcomeReply import Welcome
-import socket, time
+import socket, time, wave
 from threading import Thread
 
 
@@ -46,7 +46,7 @@ def HandleIndividualTCPConnections(connectionSocket, message):
             connectionSocket.close()
 
     else:
-        errormsg = "Expected a \"HelloCommand\""
+        errormsg = "Expected HelloCommand"
         invalidcommand = InvalidCommand(errormsg)
         connectionSocket.send(invalidcommand.invalidMessage)
         connectionSocket.close()
@@ -77,10 +77,18 @@ def TransmitSongData():
     serverSocket.bind(('', portNumber))
     print("Server is good to go on UDP")
 
-    msg = "This message should be song data".encode("ascii")
+    filelocation = "C:\\Users\Ruben\Desktop\\paris.wav"
+    #open file
+    file = wave.open(filelocation, mode="rb")
+
+
     while 1:
-        serverSocket.sendto(msg, (MCastGroup_0, portNumber))
-        time.sleep(2)
+        data = file.readframes(file.getframerate())
+        serverSocket.send(data, (MCastGroup_0, portNumber))
+        #should find out if we are at end of the file
+        if file.getnframes() == file.tell():
+            file.rewind()
+        time.sleep(1)
 
     #somewhere, this function should update global song list of what song is currently playing on what station
 
