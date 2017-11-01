@@ -35,6 +35,6 @@ class TCPClient:
 
         clienSocket.close()
 
-        #return an mcastgroup
+        #return ip of mcastgroup
         list = serverReply.split(",")
         return list[2]

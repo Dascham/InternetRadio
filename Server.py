@@ -15,7 +15,6 @@ helpfulMessages = [""]
 portNumber = 5786
 MCastGroup_0 = "224.0.105.128" #send song data here
 
-
 def HandleIndividualTCPConnections(connectionSocket, message):
     #expect HelloCommand
     if message[:1] == "0":
@@ -44,13 +43,11 @@ def HandleIndividualTCPConnections(connectionSocket, message):
             invalidCommand = InvalidCommand(msg)
             connectionSocket.send(invalidCommand.invalidMessage)
             connectionSocket.close()
-
     else:
         errormsg = "Expected HelloCommand"
         invalidcommand = InvalidCommand(errormsg)
         connectionSocket.send(invalidcommand.invalidMessage)
         connectionSocket.close()
-
 
 def ListenTCPConnections():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,13 +67,14 @@ def ListenTCPConnections():
             thread = Thread(target=HandleIndividualTCPConnections(connectionSocket, message))
             threads.append(thread)
             thread.start()
-
+        else:
+            connectionSocket.close()
 
 #send song data
 def TransmitSongData():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    ttl = struct.pack("b", 64)
+    ttl = struct.pack("b", 32)
     serverSocket.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
     serverSocket.bind(('', portNumber))
@@ -86,18 +84,17 @@ def TransmitSongData():
     #open file
     file = wave.open(filelocation, mode="rb")
 
-
     while 1:
         data = file.readframes(4410)
         serverSocket.sendto(data, (MCastGroup_0, portNumber))
-        #should find out if we are at end of the file
+
+        #reset filepointer as to repeat song, if at the end
         if file.getnframes() == file.tell():
             file.rewind()
         time.sleep(0.09)
 
     #somewhere, this function should update global song list of what song is currently playing on what station
 
-#On server start-up, song data should start being transmitted
 try:
     thread1 = Thread(target=TransmitSongData)
     thread2 = Thread(target=ListenTCPConnections)

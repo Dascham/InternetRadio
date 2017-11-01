@@ -17,5 +17,5 @@ class UDPClient:
         stream = p.open(format=p.get_format_from_width(2), channels=2, rate=44100, output=True)
 
         while 1:
-            data = clientSocket.recv(100000)
+            data = clientSocket.recvfrom(100000)
             stream.write(data)

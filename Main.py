@@ -1,4 +1,3 @@
-#this will be internet radio
 import time, struct, socket
 from threading import Thread
 
@@ -48,7 +47,7 @@ try:
     thread5.start()
     thread6.start()
 except:
-    print("stuff didn't work or something")
+    print("could not start threads")
 
 a = 0
 b = 100
