@@ -3,7 +3,7 @@ import os, re, wave, pyaudio
 
 chunk = 1024
 
-filelocation = "C:\\Users\Dascham\Desktop\\paris2.wav"
+filelocation = "C:\\Users\Dascham\Desktop\\song.wav"
 
 file = wave.open(filelocation, mode="rb")
 
@@ -18,7 +18,7 @@ stream = p.open(format=(p.get_format_from_width(file.getsampwidth())),
 
 data = file.readframes(chunk)
 a = 0
-while a < 50:
+while a < 200000:
     stream.write(data)
     data = file.readframes(chunk)
     a = a + 1

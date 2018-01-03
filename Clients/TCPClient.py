@@ -5,7 +5,7 @@ import socket
 class TCPClient:
     def __init__(self):
         self.serverip = "2.109.204.102"
-        self.serverport = 5786
+        self.serverport = 5785
 
     def InitiateTCPClient(self, serverIP, serverPort):
         clienSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
